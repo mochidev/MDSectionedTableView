@@ -46,14 +46,22 @@
     
     CGFloat rowHeight;
     CGFloat headerHeight;
+    
+    NSUInteger selectedRow;
+    NSUInteger selectedSection;
 }
 
 @property (nonatomic, assign) IBOutlet id<MDSectionedTableViewDataSource> dataSource;
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) CGFloat headerHeight;
+@property (nonatomic, readonly) NSUInteger selectedRow;
+@property (nonatomic, readonly) NSUInteger selectedSection;
 
 - (void)reloadData;
 - (MDTableViewCell *)dequeueReusableCellWithIdentifier:(NSString *)identifier;
+
+- (void)selectRow:(NSUInteger)row inSection:(NSUInteger)section;
+- (void)deselectRow:(NSUInteger)row inSection:(NSUInteger)section;
 
 - (void)layoutSubviews;
 - (MDTableViewCell *)headerCellForSection:(NSUInteger)section;

@@ -35,7 +35,7 @@
 
 @implementation MDSectionedTableView
 
-@synthesize dataSource, rowHeight, headerHeight;
+@synthesize dataSource, rowHeight, headerHeight, selectedRow, selectedSection;
 
 - (id)initWithFrame:(NSRect)frameRect
 {
@@ -44,9 +44,44 @@
         
         rowHeight = 18;
         headerHeight = 18;
+        
+        selectedRow = NSNotFound;
+        selectedSection = NSNotFound;
     }
     
     return self;
+}
+
+- (void)selectRow:(NSUInteger)row inSection:(NSUInteger)section
+{
+    selectedRow = row;
+    selectedSection = section;
+    
+    if (selectedSection != NSNotFound && selectedSection < [cellSections count]) {
+        if (selectedRow != NSNotFound && selectedRow < [[cellSections objectAtIndex:selectedSection] count]) {
+            MDTableViewCell *cell = [[cellSections objectAtIndex:selectedSection] objectAtIndex:selectedRow];
+            if ((NSNull *)cell != [NSNull null]) {
+                cell.selected = YES;
+            }
+        }
+    }
+}
+
+- (void)deselectRow:(NSUInteger)row inSection:(NSUInteger)section
+{
+    if (selectedSection != NSNotFound && selectedSection < [cellSections count]) {
+        if (selectedRow != NSNotFound && selectedRow < [[cellSections objectAtIndex:selectedSection] count]) {
+            MDTableViewCell *cell = [[cellSections objectAtIndex:selectedSection] objectAtIndex:selectedRow];
+            if ((NSNull *)cell != [NSNull null]) {
+                cell.selected = NO;
+            }
+        }
+    }
+    
+    if (row == selectedRow && section == selectedSection) {
+        selectedRow = NSNotFound;
+        selectedSection = NSNotFound;
+    }
 }
 
 - (void)awakeFromNib
@@ -84,6 +119,13 @@
         return [super hitTest:aPoint];
 
     return self;
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    NSPoint click = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+    
+    NSLog(@"Click location: %@", NSStringFromPoint(click));
 }
 
 - (void)reloadData
@@ -149,6 +191,7 @@
         [headerCells addObject:[NSNull null]];
     }
     
+    //[self deselectRow:NSNotFound inSection:NSNotFound];
     
     [self layoutSubviews];
 }

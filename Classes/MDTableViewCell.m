@@ -35,7 +35,7 @@
 
 @implementation MDTableViewCell
 
-@synthesize reuseIdentifier, alternatedRow;
+@synthesize reuseIdentifier, alternatedRow, selected;
 
 - (id)init
 {
@@ -44,12 +44,28 @@
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    if (alternatedRow) {
+    if (selected) {
+        [[NSColor alternateSelectedControlColor] setFill];
+    } else if (alternatedRow) {
         [[NSColor colorWithCalibratedRed:0.9294 green:0.9529 blue:0.9961 alpha:1] setFill];
     } else {
         [[NSColor whiteColor] setFill];
     }
     [NSBezierPath fillRect:dirtyRect];
+}
+
+- (void)setSelected:(BOOL)yn
+{
+    if (yn) {
+        [textField setTextColor:[NSColor alternateSelectedControlTextColor]];
+    } else {
+        [textField setTextColor:[NSColor blackColor]];
+    }
+    
+    if (selected != yn)
+        [self setNeedsDisplay:YES];
+    
+    selected = yn;
 }
 
 - (id)initWithReuseIdentifier:(NSString *)anIdentifier

@@ -39,10 +39,13 @@
     BOOL alternatedRow;
     
     NSTextField *textField;
+    
+    BOOL selected;
 }
 
 @property(nonatomic, copy) NSString *reuseIdentifier;
 @property(nonatomic) BOOL alternatedRow;
+@property(nonatomic) BOOL selected;
 @property(nonatomic, readonly) NSRect frameAdjustments; // this rect's values will be independantly added to the recieving rect;
 @property(nonatomic, copy) NSString *text;
 
