@@ -35,7 +35,7 @@
 
 @implementation MDSectionedTableView
 
-@synthesize dataSource, rowHeight, headerHeight, selectedRow, selectedSection;
+@synthesize dataSource, delegate, rowHeight, headerHeight, selectedRow, selectedSection;
 
 - (id)initWithFrame:(NSRect)frameRect
 {
@@ -71,10 +71,8 @@
 {
     if (selectedSection != NSNotFound && selectedSection < [cellSections count]) {
         if (selectedRow != NSNotFound && selectedRow < [[cellSections objectAtIndex:selectedSection] count]) {
-            MDTableViewCell *cell = [[cellSections objectAtIndex:selectedSection] objectAtIndex:selectedRow];
-            if ((NSNull *)cell != [NSNull null]) {
-                cell.selected = NO;
-            }
+            MDTableViewCell *cell = [self cellForRow:selectedRow inSection:selectedSection];
+            cell.selected = NO;
         }
     }
     
@@ -115,8 +113,8 @@
 
 - (NSView *)hitTest:(NSPoint)aPoint
 {
-    if ([[[NSApplication sharedApplication] currentEvent] type] != NSScrollWheel) 
-        return [super hitTest:aPoint];
+    //if ([[[NSApplication sharedApplication] currentEvent] type] != NSScrollWheel) 
+    //    return [super hitTest:aPoint];
 
     return self;
 }
@@ -125,7 +123,43 @@
 {
     NSPoint click = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     
-    NSLog(@"Click location: %@", NSStringFromPoint(click));
+    for (int section = 0; section < [cellSections count]; section++) {
+        NSArray *rows = [cellSections objectAtIndex:section];
+        for (int row = 0; row < [rows count]; row++) {
+            id cell = [rows objectAtIndex:row];
+            if (cell != [NSNull null] && NSPointInRect(click, [(NSView *)cell frame])) {
+                if (section != selectedSection || row != selectedRow) {
+                    [self deselectRow:selectedRow inSection:selectedSection];
+                    
+                    [(MDTableViewCell *)cell setSelected:YES];
+                    selectedRow = row;
+                    selectedSection = section;
+                    
+                    [self tableView:self didSelectRow:selectedRow inSection:selectedSection];
+                } else if ([[NSApp currentEvent] modifierFlags]&NSShiftKeyMask || [[NSApp currentEvent] modifierFlags]&NSCommandKeyMask) {
+                    [self deselectRow:selectedRow inSection:selectedSection];
+                    [self tableView:self didSelectRow:NSNotFound inSection:NSNotFound]; // deselected
+                }
+                
+                return;
+            }
+        }
+    }
+    
+    [self deselectRow:selectedRow inSection:selectedSection];
+    [self tableView:self didSelectRow:NSNotFound inSection:NSNotFound]; // nothing selected
+}
+
+- (void)mouseUp:(NSEvent *)theEvent
+{
+    if ([theEvent clickCount] == 2) {
+        [self tableView:self didDoubleClickRow:selectedRow inSection:selectedSection];
+    }
+}
+
+- (IBAction)reloadData:(id)sender
+{
+    [self reloadData];
 }
 
 - (void)reloadData
@@ -287,6 +321,8 @@
                     [self addSubview:cell positioned:NSWindowBelow relativeTo:nil];
                 }
                 
+                cell.selected = (section == selectedSection && row == selectedRow);
+                
                 cell.alternatedRow = row % 2;
                 
                 cellFrame = NSMakeRect(0, actualHeight-cellOrigin-rowHeight, cellWidth, rowHeight);
@@ -353,7 +389,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(MDSectionedTableView *)tableView
 {
-    NSInteger returnValue = 0;
+    NSInteger returnValue = 1;
     
     if (dataSource && [dataSource respondsToSelector:@selector(numberOfSectionsInTableView:)])
         returnValue = [dataSource numberOfSectionsInTableView:tableView];
@@ -361,6 +397,17 @@
     return returnValue;
 }
 
+- (void)tableView:(MDSectionedTableView *)tableView didSelectRow:(NSUInteger)row inSection:(NSUInteger)section
+{
+    if (delegate && [delegate respondsToSelector:@selector(tableView:didSelectRow:inSection:)])
+        [delegate tableView:tableView didSelectRow:row inSection:section];
+}
+
+- (void)tableView:(MDSectionedTableView *)tableView didDoubleClickRow:(NSUInteger)row inSection:(NSUInteger)section
+{
+    if (delegate && [delegate respondsToSelector:@selector(tableView:didDoubleClickRow:inSection:)])
+        [delegate tableView:tableView didDoubleClickRow:row inSection:section];
+}
 
 - (MDTableViewCell *)headerCellForSection:(NSUInteger)section
 {

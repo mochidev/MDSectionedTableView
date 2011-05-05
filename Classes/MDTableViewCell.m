@@ -73,7 +73,7 @@
     if ((self = [super initWithFrame:NSMakeRect(0, 0, 100, 18)])) {
         self.reuseIdentifier = anIdentifier;
         
-        textField = [[NSTextField alloc] initWithFrame:NSMakeRect(15, 3, [self bounds].size.width-30, 14)];
+        textField = [[NSTextField alloc] initWithFrame:NSMakeRect(15, 2, [self bounds].size.width-30, 14)];
         [textField setAutoresizingMask:NSViewWidthSizable];
         [textField setEditable:NO];
         [textField setSelectable:NO];

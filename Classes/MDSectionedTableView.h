@@ -32,14 +32,16 @@
 
 #import <Foundation/Foundation.h>
 #import "MDSectionedTableViewDataSource.h"
+#import "MDSectionedTableViewDelegate.h"
 
 @class MDTableViewCell;
 
-@interface MDSectionedTableView : NSView <MDSectionedTableViewDataSource> {
+@interface MDSectionedTableView : NSView <MDSectionedTableViewDataSource, MDSectionedTableViewDelegate> {
     NSMutableArray *cellSections;
     NSMutableArray *headerCells;
     NSMutableSet *dequeuedCells;
     id<MDSectionedTableViewDataSource> dataSource;
+    id<MDSectionedTableViewDelegate> delegate;
     
     NSClipView *clipView;
     CGFloat calculatedHeight;
@@ -52,12 +54,14 @@
 }
 
 @property (nonatomic, assign) IBOutlet id<MDSectionedTableViewDataSource> dataSource;
+@property (nonatomic, assign) IBOutlet id<MDSectionedTableViewDelegate> delegate;
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) CGFloat headerHeight;
 @property (nonatomic, readonly) NSUInteger selectedRow;
 @property (nonatomic, readonly) NSUInteger selectedSection;
 
 - (void)reloadData;
+- (IBAction)reloadData:(id)sender;
 - (MDTableViewCell *)dequeueReusableCellWithIdentifier:(NSString *)identifier;
 
 - (void)selectRow:(NSUInteger)row inSection:(NSUInteger)section;
