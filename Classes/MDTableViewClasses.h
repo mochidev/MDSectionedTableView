@@ -1,6 +1,6 @@
 //
-//  MDSectionedTableViewDataSource.h
-//  MDSectionedTableView
+//  MDTableViewClasses.h
+//  MDTableViewClasses
 //
 //  Created by Dimitri Bouniol on 5/2/11.
 //  Copyright 2011 Mochi Development, Inc. All rights reserved.
@@ -30,18 +30,8 @@
 //  Also, it'd be super awesome if you credited this page in your about screen :)
 //  
 
-#import <Foundation/Foundation.h>
-@class MDSectionedTableView;
-@class MDTableViewCell;
-
-@protocol MDSectionedTableViewDataSource <NSObject>
-
-@required
-- (NSUInteger)tableView:(MDSectionedTableView *)tableView numberOfRowsInSection:(NSUInteger)section;
-- (MDTableViewCell *)tableView:(MDSectionedTableView *)tableView cellForRow:(NSUInteger)row inSection:(NSUInteger)section;
-- (MDTableViewCell *)tableView:(MDSectionedTableView *)tableView cellForHeaderOfSection:(NSUInteger)section;
-
-@optional
-- (NSUInteger)numberOfSectionsInTableView:(MDSectionedTableView *)tableView;
-
-@end
+#import "MDSectionedTableView.h"
+#import "MDSectionedTableViewDataSource.h"
+#import "MDSectionedTableViewDelegate.h"
+#import "MDTableViewCell.h"
+#import "MDTableViewHeaderCell.h"

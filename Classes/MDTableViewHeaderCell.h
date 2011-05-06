@@ -34,7 +34,6 @@
 #import "MDTableViewCell.h"
 
 @interface MDTableViewHeaderCell : MDTableViewCell {
-@private
     NSImageView *backgroundView;
     NSTextField *shadowTextField;
 }

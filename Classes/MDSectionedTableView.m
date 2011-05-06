@@ -113,8 +113,12 @@
 
 - (NSView *)hitTest:(NSPoint)aPoint
 {
-    //if ([[[NSApplication sharedApplication] currentEvent] type] != NSScrollWheel) 
-    //    return [super hitTest:aPoint];
+    if ([[[NSApplication sharedApplication] currentEvent] type] != NSScrollWheel &&
+        [[[NSApplication sharedApplication] currentEvent] type] != NSEventTypeBeginGesture &&
+        [[[NSApplication sharedApplication] currentEvent] type] != NSEventTypeEndGesture) {
+        //NSLog(@"event %lu", [[[NSApplication sharedApplication] currentEvent] type]);
+        return [super hitTest:aPoint];
+    }
 
     return self;
 }
@@ -357,7 +361,7 @@
     return [dequeuedCell autorelease];
 }
 
-- (NSInteger)tableView:(MDSectionedTableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSUInteger)tableView:(MDSectionedTableView *)tableView numberOfRowsInSection:(NSUInteger)section
 {
     NSInteger returnValue = 0;
     
@@ -367,7 +371,7 @@
     return returnValue;
 }
 
-- (MDTableViewCell *)tableView:(MDSectionedTableView *)tableView cellForRow:(NSInteger)row inSection:(NSInteger)section
+- (MDTableViewCell *)tableView:(MDSectionedTableView *)tableView cellForRow:(NSUInteger)row inSection:(NSUInteger)section
 {
     MDTableViewCell *returnValue = nil;
     
@@ -377,7 +381,7 @@
     return returnValue;
 }
 
-- (MDTableViewCell *)tableView:(MDSectionedTableView *)tableView cellForHeaderOfSection:(NSInteger)section
+- (MDTableViewCell *)tableView:(MDSectionedTableView *)tableView cellForHeaderOfSection:(NSUInteger)section
 {
     MDTableViewCell *returnValue = nil;
     
@@ -387,7 +391,7 @@
     return returnValue;
 }
 
-- (NSInteger)numberOfSectionsInTableView:(MDSectionedTableView *)tableView
+- (NSUInteger)numberOfSectionsInTableView:(MDSectionedTableView *)tableView
 {
     NSInteger returnValue = 1;
     
