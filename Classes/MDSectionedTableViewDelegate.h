@@ -1,6 +1,6 @@
 //
 //  MDSectionedTableViewDelegate.h
-//  MDTableViewClasses
+//  MDSectionedTableView
 //
 //  Created by Dimitri Bouniol on 5/4/11.
 //  Copyright 2011 Mochi Development, Inc. All rights reserved.
