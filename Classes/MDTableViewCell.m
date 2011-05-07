@@ -54,18 +54,24 @@
     [NSBezierPath fillRect:dirtyRect];
 }
 
+- (void)setAlternatedRow:(BOOL)yn
+{
+    BOOL oldValue = selected;
+    alternatedRow = yn;
+    [self setNeedsDisplay:(oldValue != selected)];
+}
+
 - (void)setSelected:(BOOL)yn
 {
+    BOOL oldValue = selected;
+    selected = yn;
+    [self setNeedsDisplay:(oldValue != selected)];
+    
     if (yn) {
         [textField setTextColor:[NSColor alternateSelectedControlTextColor]];
     } else {
         [textField setTextColor:[NSColor blackColor]];
     }
-    
-    if (selected != yn)
-        [self setNeedsDisplay:YES];
-    
-    selected = yn;
 }
 
 - (id)initWithReuseIdentifier:(NSString *)anIdentifier

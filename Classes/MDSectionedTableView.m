@@ -41,6 +41,8 @@
 {
     if ((self = [super initWithFrame:frameRect])) {
         dequeuedCells = [[NSMutableSet alloc] init];
+        cellSections = [[NSMutableArray alloc] init];
+        headerCells = [[NSMutableArray alloc] init];
         
         rowHeight = 18;
         headerHeight = 18;
@@ -197,39 +199,80 @@
     
     NSUInteger numberOfSections = [self numberOfSectionsInTableView:self];
     
-    for (id view in headerCells) {
-        if (view != [NSNull null]) {
-            [(NSView *)view removeFromSuperview];
+    if (numberOfSections > [cellSections count]) {
+        for (NSUInteger section = [cellSections count]; section < numberOfSections; section++) {
+            NSUInteger numberOfRows = [self tableView:self numberOfRowsInSection:section];
+            NSMutableArray *cellRows = [[NSMutableArray alloc] initWithCapacity:numberOfRows];
+            [cellSections addObject:cellRows];
+            [cellRows release];
+            [headerCells addObject:[NSNull null]];
+        }
+    } else if (numberOfSections < [cellSections count]) {
+        NSUInteger difference = [cellSections count]-numberOfSections;
+        for (NSUInteger section = 0; section < difference; section++) {
+            [headerCells removeLastObject];
+            [cellSections removeLastObject];
         }
     }
     
-    for (NSArray *views in cellSections) {
-        for (id view in views) {
-            if (view != [NSNull null]) {
-                [(NSView *)view removeFromSuperview];
+    //NSLog(@"%@", cellSections);
+    
+//    for (id view in headerCells) {
+//        if (view != [NSNull null]) {
+//            [(NSView *)view removeFromSuperview];
+//        }
+//    }
+//    
+//    for (NSArray *views in cellSections) {
+//        for (id view in views) {
+//            if (view != [NSNull null]) {
+//                [(NSView *)view removeFromSuperview];
+//            }
+//        }
+//    }
+    
+//    [cellSections release];
+//    cellSections = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
+//    [headerCells release];
+//    headerCells = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
+    
+    for (NSUInteger section = 0; section < [cellSections count]; section++) {
+        NSMutableArray *cellRows = [cellSections objectAtIndex:section];
+        
+        NSUInteger numberOfRows = [self tableView:self numberOfRowsInSection:section];
+        calculatedHeight += headerHeight + rowHeight*numberOfRows;
+        
+        if (numberOfRows > [cellRows count]) {
+            for (NSUInteger row = [cellRows count]; row < numberOfRows; row++) {
+                [cellRows addObject:[NSNull null]];
+            }
+        } else if (numberOfRows < [cellRows count]) {
+            NSUInteger difference = [cellRows count]-numberOfRows;
+            for (NSUInteger row = 0; row < difference; row++) {
+                id cell = [cellRows lastObject];
+                if (cell != [NSNull null]) {
+                    [dequeuedCells addObject:cell];
+                    [cell removeFromSuperview];
+                }
+                [cellRows removeLastObject];
+            }
+        }
+        
+        for (NSUInteger row = 0; row < numberOfRows; row++) {
+            id cell = [cellRows objectAtIndex:row];
+            if (cell != [NSNull null]) {
+                [dequeuedCells addObject:cell];
+                [cellRows replaceObjectAtIndex:row withObject:[NSNull null]];
             }
         }
     }
     
-    [cellSections release];
-    cellSections = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
-    [headerCells release];
-    headerCells = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
-    
-    for (int i = 0; i < numberOfSections; i++) {
-        NSUInteger numberOfRows = [self tableView:self numberOfRowsInSection:i];
-        //NSLog(@"Section %d, %d rows", i, numberOfRows);
-        calculatedHeight += headerHeight + rowHeight*numberOfRows;
-        NSMutableArray *cellRows = [[NSMutableArray alloc] initWithCapacity:numberOfRows];
-        for (int j = 0; j < numberOfRows; j++) {
-            [cellRows addObject:[NSNull null]];
+    if (selectedSection != NSNotFound || selectedRow!= NSNotFound) {
+        if (selectedSection > numberOfSections || selectedRow > [self tableView:self numberOfRowsInSection:selectedSection]) {
+            [self deselectRow:selectedRow inSection:selectedSection];
+            [self tableView:self didSelectRow:selectedRow inSection:selectedSection];
         }
-        [cellSections addObject:cellRows];
-        [cellRows release];
-        [headerCells addObject:[NSNull null]];
     }
-    
-    //[self deselectRow:NSNotFound inSection:NSNotFound];
     
     [self layoutSubviews];
 }
@@ -339,6 +382,7 @@
                 cellFrame.size.height += cellFrameAdjustments.size.height;
                 
                 [cell setFrame:cellFrame];
+                [cell setNeedsDisplay:YES];
             }
             cellOrigin += rowHeight;
         }
