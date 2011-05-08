@@ -210,12 +210,20 @@
     } else if (numberOfSections < [cellSections count]) {
         NSUInteger difference = [cellSections count]-numberOfSections;
         for (NSUInteger section = 0; section < difference; section++) {
+            id headerCell = [headerCells lastObject];
+            if (headerCell != [NSNull null]) {
+                [headerCell removeFromSuperview];
+            }
             [headerCells removeLastObject];
+            NSArray *cellRows = [cellSections lastObject];
+            for (id cell in cellRows) {
+                if (cell != [NSNull null]) {
+                    [cell removeFromSuperview];
+                }
+            }
             [cellSections removeLastObject];
         }
     }
-    
-    //NSLog(@"%@", cellSections);
     
 //    for (id view in headerCells) {
 //        if (view != [NSNull null]) {
@@ -237,6 +245,13 @@
 //    headerCells = [[NSMutableArray alloc] initWithCapacity:numberOfSections];
     
     for (NSUInteger section = 0; section < [cellSections count]; section++) {
+        id headerCell = [headerCells objectAtIndex:section];
+        if (headerCell != [NSNull null]) {
+            //[dequeuedCells addObject:headerCell];
+            [self setHeaderCell:nil forSection:section];
+            //[headerCells replaceObjectAtIndex:section withObject:[NSNull null]];
+        }
+        
         NSMutableArray *cellRows = [cellSections objectAtIndex:section];
         
         NSUInteger numberOfRows = [self tableView:self numberOfRowsInSection:section];
@@ -262,6 +277,7 @@
             id cell = [cellRows objectAtIndex:row];
             if (cell != [NSNull null]) {
                 [dequeuedCells addObject:cell];
+                [cell setHidden:YES];
                 [cellRows replaceObjectAtIndex:row withObject:[NSNull null]];
             }
         }
@@ -326,6 +342,8 @@
                 [self addSubview:cell];
             }
             
+            [cell setHidden:NO];
+            
             if (cellOrigin >= offset) {
                 //NSLog(@"%d A cell: %@", section, cell);
                 cellFrame = NSMakeRect(0, actualHeight-cellOrigin-headerHeight, cellWidth, headerHeight);
@@ -368,8 +386,8 @@
                     [self addSubview:cell positioned:NSWindowBelow relativeTo:nil];
                 }
                 
+                [cell setHidden:NO];
                 cell.selected = (section == selectedSection && row == selectedRow);
-                
                 cell.alternatedRow = row % 2;
                 
                 cellFrame = NSMakeRect(0, actualHeight-cellOrigin-rowHeight, cellWidth, rowHeight);

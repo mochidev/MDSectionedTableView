@@ -32,8 +32,9 @@
 
 #import "MDTableViewHeaderCell.h"
 
-
 @implementation MDTableViewHeaderCell
+
+@synthesize backgroundView;
 
 - (id)initWithReuseIdentifier:(NSString *)anIdentifier
 {
@@ -45,31 +46,12 @@
         [self addSubview:backgroundView positioned:NSWindowBelow relativeTo:nil];
         [backgroundView release];
         
-        NSRect textFieldFrame = NSMakeRect(10, 2, [self bounds].size.width-20, 16);
-        [textField setFrame:textFieldFrame];
-        [textField setTextColor:[NSColor colorWithCalibratedWhite:0.3 alpha:1]];
-        [textField setFont:[NSFont boldSystemFontOfSize:12]];
-        
-        textFieldFrame.origin.y -= 1;
-        
-        shadowTextField = [[NSTextField alloc] initWithFrame:textFieldFrame];
-        [shadowTextField setAutoresizingMask:NSViewWidthSizable];
-        [shadowTextField setEditable:NO];
-        [shadowTextField setSelectable:NO];
-        [shadowTextField setDrawsBackground:NO];
-        [shadowTextField setBezeled:NO];
-        [shadowTextField setTextColor:[NSColor colorWithCalibratedWhite:1 alpha:0.5]];
-        [shadowTextField setFont:[NSFont boldSystemFontOfSize:12]];
-        [self addSubview:shadowTextField positioned:NSWindowBelow relativeTo:textField];
-        [shadowTextField release];
+        [self.textField setFrame:NSMakeRect(10, 2, [self bounds].size.width-20, 16)];
+        [self.textField setTextColor:[NSColor colorWithCalibratedWhite:0.3 alpha:1]];
+        [self.textField setFont:[NSFont boldSystemFontOfSize:12]];
+        [[self.textField cell] setBackgroundStyle:NSBackgroundStyleRaised];
     }
     return self;
-}
-
-- (void)setText:(NSString *)text
-{
-    [super setText:text];
-    [shadowTextField setStringValue:text];
 }
 
 - (void)drawRect:(NSRect)dirtyRect

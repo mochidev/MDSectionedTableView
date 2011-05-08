@@ -32,10 +32,9 @@
 
 #import "MDTableViewCell.h"
 
-
 @implementation MDTableViewCell
 
-@synthesize reuseIdentifier, alternatedRow, selected;
+@synthesize reuseIdentifier, alternatedRow, selected, textField;
 
 - (id)init
 {
@@ -80,6 +79,7 @@
         self.reuseIdentifier = anIdentifier;
         
         textField = [[NSTextField alloc] initWithFrame:NSMakeRect(15, 2, [self bounds].size.width-30, 14)];
+        [[textField cell] setLineBreakMode:NSLineBreakByTruncatingTail];
         [textField setAutoresizingMask:NSViewWidthSizable];
         [textField setEditable:NO];
         [textField setSelectable:NO];

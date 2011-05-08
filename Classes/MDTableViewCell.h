@@ -48,6 +48,7 @@
 @property(nonatomic) BOOL selected;
 @property(nonatomic, readonly) NSRect frameAdjustments; // this rect's values will be independantly added to the recieving rect;
 @property(nonatomic, copy) NSString *text;
+@property(nonatomic, readonly) NSTextField *textField;
 
 - (id)initWithReuseIdentifier:(NSString *)reuseIdentifier;
 + (id)cellWithReuseIdentifier:(NSString *)reuseIdentifier;

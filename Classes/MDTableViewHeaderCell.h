@@ -35,7 +35,8 @@
 
 @interface MDTableViewHeaderCell : MDTableViewCell {
     NSImageView *backgroundView;
-    NSTextField *shadowTextField;
 }
+
+@property (nonatomic, readonly) NSImageView *backgroundView;
 
 @end
